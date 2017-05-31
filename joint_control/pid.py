@@ -53,13 +53,13 @@ class PIDController(object):
         @return control signal
         '''
         # error of controller:
-        error = target - sensor
+        error_term = target - sensor
         
         #perform update of the controller
-        P = self.Kp*(error - self.e1)
-        I = self.Ki*error*self.dt
-        D = self.Kd*(error-2*self.e1+self.e2)/self.dt
-        self.e2, self.e1 = self.e1, error
+        P = self.Kp*(error_term - self.e1)
+        I = self.Ki*error_term*self.dt
+        D = self.Kd*(error_term-2*self.e1+self.e2)/self.dt
+        self.e2, self.e1 = self.e1, error_term
         self.y.append(sensor*self.dt)
         predict = self.y.popleft()
         self.u = P + I + D + predict
