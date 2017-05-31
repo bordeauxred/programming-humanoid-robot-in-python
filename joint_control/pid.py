@@ -53,7 +53,7 @@ class PIDController(object):
         @return control signal
         '''
         # error of controller:
-        error_term = target - sensor
+        error_term =  sensor - target
         
         #perform update of the controller
         P = self.Kp*(error_term - self.e1)
