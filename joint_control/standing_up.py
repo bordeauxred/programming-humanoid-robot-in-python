@@ -16,7 +16,30 @@ class StandingUpAgent(PostureRecognitionAgent):
 
     def standing_up(self):
         posture = self.posture
-        # YOUR CODE HERE
+        # check which posture we recognize and take a appropiate action
+        if posture == 'Belly' or posture == 'Right':
+            self.keyframes = rightBellyToStand()
+        if posture == 'Back':
+            self.keyframes = rightBackToStand()
+        if posture == 'Crouch':
+            self.keyframes = leftBellyToStand()
+        if posture == 'Frog':
+            self.keyframes = leftBellyToStand()
+        if posture == 'Left':
+            self.keyframes = rightBellyToStand()
+        if posture == 'Knee':
+            self.keyframes = rightBellyToStand()
+        if posture == 'HeadBack':
+            self.keyframes = wipe_forehead()
+        if posture == 'Sit':
+            self.keyframes = rightBackToStand()
+        if posture == 'StandInit':
+            self.keyframes = rightBackToStand()
+        # else posture is Stand, do nothing and say hello
+        else:
+            self.keyframes = hello()
+            
+        
 
 
 class TestStandingUpAgent(StandingUpAgent):
