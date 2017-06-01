@@ -41,6 +41,56 @@ class AngleInterpolationAgent(PIDAgent):
     def angle_interpolation(self, keyframes, perception):
         target_joints = {}
         # YOUR CODE HERE
+        # get data
+        (names, times, keys) = keyframes
+        #get time intervall, maybe suftract starting time
+        time_dif = perception.time
+
+        #iterating through all joints
+        for i in range(len(names)):
+            joint_name = names[i]
+            #check if we have data about a joint
+            if joint_name in self.joint_names:
+
+                #iterate over the time
+                for j in range(len(times[i]) - 1):
+
+                    #do interpolation with positions/ data p0 and p3 at time t0 and t3
+                    # we have a time before data -> start at begin of recording
+                    if time_dif < times[i][0] and j == 0:
+                        #times
+                        t0 = 0
+                        t3 = times[i][0]
+                        #positions
+                        p0 = self.perception.joint[joint_name]
+                        p3 = keys[i][0][0]
+                       #interpolate position at time right in the provided data     
+                    elif (times[i][j] < time_dif < times[i][j + 1] and j+1 < len(times[i])):
+                        #times
+                        t0 = times[i][j]
+                        t3 = times[i][j+1]
+                        #positions
+                        p0 = keys[i][j][0]
+                        p3 = keys[i][j+1][0]
+
+                    elif j == 0:
+                        #times
+                        t0 = times[i][j]
+                        t3 = times[i][j+1]
+                        #positons
+                        p0 = keys[i][j][0]
+                        p3 = keys[i][j+1][0]
+                        
+   
+                    p1 = keys[i][j][1][2] + p0
+                    p2 = keys[i][j][2][2] + p3
+                    
+                    # t \in [0,1]
+                    t = (time_dif-t0) / (t3-t0)
+    
+                    #put all data into the bizec interpolation and add this to the dictonary of results
+                    target_joints[joint_name] = ((1 - t)**3)*p0 + (3 * (1 - t)**2)*p1*t + (3 * (1 - t))*p2*(t**2) + p3*(t**3)
+                        
 
         return target_joints
 
