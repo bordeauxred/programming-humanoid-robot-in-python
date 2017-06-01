@@ -10,6 +10,7 @@
 '''
 
 import pickle
+import numpy
 from angle_interpolation import AngleInterpolationAgent
 from keyframes import hello
 from sklearn import svm, metrics
@@ -35,9 +36,15 @@ class PostureRecognitionAgent(AngleInterpolationAgent):
         print(perception)
         posture = 'unknown'
         # YOUR CODE HERE
-        posture = self.posture_classifier.predict(perception)
-        print(posture)
+        angles = []
+        #check all joints
+        for joint_str in self.joint_names:
+            angles.append(perception.joint[joint_str]
 
+        #append data of body angles
+        angles.append(perception.imu[0])
+        angles.append(perception.imu[1])
+        # return
         return posture
 
 if __name__ == '__main__':
