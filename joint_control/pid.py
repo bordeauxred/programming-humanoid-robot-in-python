@@ -35,9 +35,9 @@ class PIDController(object):
         self.e2 = np.zeros(size)
         # ADJUST PARAMETERS BELOW
         delay = 0
-        self.Kp = 0
-        self.Ki = 0
-        self.Kd = 0
+        self.Kp = 40
+        self.Ki = 0.1
+        self.Kd = 0.1
         self.y = deque(np.zeros(size), maxlen=delay + 1)
 
     def set_delay(self, delay):
@@ -53,23 +53,19 @@ class PIDController(object):
         @return control signal
         '''
         # error of controller:
-        error = target - sensor
+        error_term =  sensor - target
         
         #perform update of the controller
-        P = self.Kp*(error - self.e1)
-        I = self.Ki*error*self.dt
-        D = self.Kd*(error-self.e1-self.e2)/self.dt
-        
-        self.u = P + I + D + self.predict(sensor)
-        self.e2, self.e1 = self.e1, error
-
+        P = self.Kp*(error_term - self.e1)
+        I = self.Ki*error_term*self.dt
+        D = self.Kd*(error_term-2*self.e1+self.e2)/self.dt
+        self.e2 = self.e1
+        self.e1 = error_term
+        self.y.append(sensor*self.dt)
+        predict = self.y.popleft()
+        self.u = P + I + D + predict
         return self.u
     
-    def predict (self, sensor):
-        # buffer model predictions
-        self.y.append(sensor*self.dt)
-        return self.y.popleft()
-
 
 class PIDAgent(SparkAgent):
     def __init__(self, simspark_ip='localhost',
